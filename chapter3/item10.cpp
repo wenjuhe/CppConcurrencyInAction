@@ -3,7 +3,7 @@
 #include <mutex>
 #include  <climits>
 /*
- * todo 层级锁
+ * todo 层级锁 可以用来检测代码是否有造成死锁的可能!
  * */
 class hierarchical_mutex
 {
@@ -76,10 +76,10 @@ void test_hierarchy_lock()
     hierarchical_mutex hmtx2(500);
 
     std::thread t1([&hmtx1,&hmtx2](){
-       hmtx1.lock();
-       hmtx2.lock();
-       hmtx2.unlock();
-       hmtx1.unlock();
+        hmtx1.lock();
+        hmtx2.lock();
+        hmtx2.unlock();
+        hmtx1.unlock();
     });
 
     std::thread t2([&hmtx1,&hmtx2](){
