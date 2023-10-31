@@ -55,27 +55,27 @@ void PoorImplemention()
 void ResonableImplemention()
 {
     std::thread t1([](){
-       for (;;)
-       {
-           std::unique_lock<std::mutex> lock(mtx_num);
-           /*
-            * todo false ---> 挂起 ---> 释放锁
-            * */
-           cvA.wait(lock,[](){
-               //todo 谓词
-               return num == 1;
-           });
-           /*
-            * todo 上面的语句等价于 用while而没有用if 防止虚假唤醒.
-            * */
-           while(num != 1)
-           {
-               cvA.wait(lock);
-           }
-           num++;
-           std::cout << "thread A print 1..." << std::endl;
-           cvB.notify_one();
-       }
+        for (;;)
+        {
+            std::unique_lock<std::mutex> lock(mtx_num);
+            /*
+             * todo false ---> 挂起 ---> 释放锁
+             * */
+            cvA.wait(lock,[](){
+                //todo 谓词
+                return num == 1;
+            });
+            /*
+             * todo 上面的语句等价于 用while而没有用if 防止虚假唤醒.
+             * */
+            while(num != 1)
+            {
+                cvA.wait(lock);
+            }
+            num++;
+            std::cout << "thread A print 1..." << std::endl;
+            cvB.notify_one();
+        }
     });
 
     std::thread t2([](){
@@ -193,16 +193,16 @@ void test_safe_que()
     });
 
     std::thread consumer2([&](){
-       for(;;)
-       {
-           auto data = safe_que.try_pop();
-           if (data != nullptr)
-           {
-               std::lock_guard<std::mutex> printlk(mtx_print);
-               std::cout << "consumer2 try_pop data is " << *data << std::endl;
-           }
-           std::this_thread::sleep_for(std::chrono::microseconds(500));
-       }
+        for(;;)
+        {
+            auto data = safe_que.try_pop();
+            if (data != nullptr)
+            {
+                std::lock_guard<std::mutex> printlk(mtx_print);
+                std::cout << "consumer2 try_pop data is " << *data << std::endl;
+            }
+            std::this_thread::sleep_for(std::chrono::microseconds(500));
+        }
     });
 
     producer.join();
